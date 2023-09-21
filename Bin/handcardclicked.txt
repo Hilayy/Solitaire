@@ -1,0 +1,52 @@
+proc HandCardClicked
+ push ax
+  checkClickAfterHC:
+   call HighlightCard
+   mov ax,3
+   int 33h
+   cmp bx, 00000001b
+   jne checkClickAfterHC
+   shr cx, 1
+   checkHFAfterHC:
+    call IsMouseOnHF
+    cmp [isThere], 1
+    jne checkDFAfterHC
+    mov bx, offset hand
+    add bl, [handIndex]
+    xor bh, bh
+    dec bx
+    mov al, [byte bx]
+    mov [CardValue],al
+    call EligibleToHF
+    cmp [bool], 1
+    jne exitHandCardClicked
+    call DeleteCard
+    mov [BmpLeft], 156
+    mov [BmpTop], 10
+    call DeleteCard
+    call CardByValue
+    waitForMouseToLeaveHF:
+     mov ax, 3
+     int 33h
+    call IsMouseOnHF
+     cmp [isThere], 0
+     jne waitForMouseToLeaveHF
+     mov cx, 7
+     reprintHC:
+      call CardByValue
+      call Delay
+    loop reprintHC
+   checkDFAfterHC:
+       
+
+  
+  
+  
+  mov bx, offset hand
+  xor bh, bh
+  add bl, [handIndex]
+  dec bx
+  mov [byte bx], 0 
+ exitHandCardClicked:
+ pop ax
+endp HandCardClicked
